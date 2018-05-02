@@ -35,5 +35,9 @@ variable "public_network" {
 }
 
 variable "worker_count" {
-  default = "2"
+  default = "1"
+}
+
+variable "docker_volume_size" {
+  default = "100"
 }

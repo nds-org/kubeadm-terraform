@@ -16,6 +16,7 @@ resource "openstack_compute_instance_v2" "master" {
 
   depends_on = [
     "openstack_networking_router_interface_v2.router_interface_1",
+    "openstack_blockstorage_volume_v2.master_docker"
   ]
 }
 
@@ -24,6 +25,16 @@ resource "openstack_compute_floatingip_associate_v2" "masterip" {
   instance_id = "${openstack_compute_instance_v2.master.id}"
   fixed_ip    = "${openstack_compute_instance_v2.master.network.0.fixed_ip_v4}"
 }
+
+resource "openstack_compute_volume_attach_v2" "master-docker" {
+  volume_id = "${openstack_blockstorage_volume_v2.master_docker.id}"
+  instance_id = "${openstack_compute_instance_v2.master.id}"
+}
+
+output "master-docker-device" {
+  value = "${openstack_compute_volume_attach_v2.worker-docker.device}"
+}
+
 
 resource "null_resource" "provision_master" {
   depends_on = ["openstack_compute_floatingip_associate_v2.masterip"]

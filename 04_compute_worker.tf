@@ -26,6 +26,18 @@ resource "openstack_compute_instance_v2" "worker" {
   ]
 }
 
+resource "openstack_compute_volume_attach_v2" "worker-docker" {
+  count       = "${var.worker_count}"
+  volume_id   = "${element(openstack_blockstorage_volume_v2.worker_docker.*.id, count.index)}"
+  instance_id = "${element(openstack_compute_instance_v2.worker.*.id, count.index)}"
+}
+
+output "worker-docker-devices" {
+  value = "${openstack_compute_volume_attach_v2.worker-docker.*.device}"
+}
+
+
+
 resource "null_resource" "provision_worker" {
   count = "${var.worker_count}"
 
