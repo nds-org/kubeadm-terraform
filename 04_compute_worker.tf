@@ -32,8 +32,8 @@ resource "openstack_compute_volume_attach_v2" "worker-docker" {
   instance_id = "${element(openstack_compute_instance_v2.worker.*.id, count.index)}"
 }
 
-output "worker-docker-devices" {
-  value = "${openstack_compute_volume_attach_v2.worker-docker.*.device}"
+locals {
+  worker-docker-devices = "${openstack_compute_volume_attach_v2.worker-docker.*.device}"
 }
 
 
@@ -56,13 +56,20 @@ resource "null_resource" "provision_worker" {
       inline = [
         "sudo hostnamectl set-hostname ${var.env_name}-worker${count.index}",
         "echo '127.0.0.1 ${var.env_name}-worker${count.index}' | sudo tee -a /etc/hosts",
-        "sudo reboot"
+        "nohup sudo reboot &"
       ]
     }
 
-  provisioner "remote-exec" {
-    script = "assets/bootstrap.sh"
-  }
+    provisioner "file" {
+      source  = "assets/bootstrap.sh"
+      destination = "/home/ubuntu/bootstrap.sh"
+    }
+    provisioner "remote-exec" {
+      inline = [
+        "chmod +x /home/ubuntu/bootstrap.sh",
+        "/home/ubuntu/bootstrap.sh ${local.worker-docker-devices[count.index]}"
+      ]
+    }
 }
 
 resource "null_resource" "worker_join" {

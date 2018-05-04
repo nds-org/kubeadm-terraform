@@ -31,13 +31,16 @@ resource "openstack_compute_volume_attach_v2" "master-docker" {
   instance_id = "${openstack_compute_instance_v2.master.id}"
 }
 
-output "master-docker-device" {
-  value = "${openstack_compute_volume_attach_v2.worker-docker.device}"
+locals {
+  master-docker-device = "${openstack_compute_volume_attach_v2.master-docker.device}"
 }
 
 
 resource "null_resource" "provision_master" {
-  depends_on = ["openstack_compute_floatingip_associate_v2.masterip"]
+  depends_on = [
+    "openstack_compute_floatingip_associate_v2.masterip",
+    "openstack_compute_volume_attach_v2.master-docker"
+  ]
 
   connection {
     user        = "ubuntu"
@@ -50,12 +53,19 @@ resource "null_resource" "provision_master" {
     inline = [
       "sudo hostnamectl set-hostname ${var.env_name}-master",
       "echo '127.0.0.1 ${var.env_name}-master' | sudo tee -a /etc/hosts",
-      "sudo reboot"
+      "nohup sudo reboot &"
     ]
   }
 
+  provisioner "file" {
+    source  = "assets/bootstrap.sh"
+    destination = "/home/ubuntu/bootstrap.sh"
+  }
   provisioner "remote-exec" {
-    script = "assets/bootstrap.sh"
+    inline = [
+      "chmod +x /home/ubuntu/bootstrap.sh",
+      "/home/ubuntu/bootstrap.sh ${local.master-docker-device}"
+    ]
   }
 
   provisioner "remote-exec" {

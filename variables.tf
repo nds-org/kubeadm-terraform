@@ -1,5 +1,5 @@
 variable "env_name" {
-  default = "staging"
+  default = "bgdev"
 }
 
 variable "pubkey" {
@@ -35,9 +35,9 @@ variable "public_network" {
 }
 
 variable "worker_count" {
-  default = "1"
+  default = "2"
 }
 
 variable "docker_volume_size" {
-  default = "100"
+  default = "75"
 }
