@@ -38,6 +38,10 @@ variable "worker_count" {
   default = "2"
 }
 
+variable "worker_ips_count" {
+  default = "1"
+}
+
 variable "docker_volume_size" {
   default = "75"
 }

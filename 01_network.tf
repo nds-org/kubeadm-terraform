@@ -27,3 +27,8 @@ resource "openstack_networking_router_interface_v2" "router_interface_1" {
 resource "openstack_networking_floatingip_v2" "masterip" {
   pool = "${var.public_network}"
 }
+
+resource "openstack_networking_floatingip_v2" "workerip" {
+  count = "${var.worker_ips_count}"
+  pool = "${var.public_network}"
+}
