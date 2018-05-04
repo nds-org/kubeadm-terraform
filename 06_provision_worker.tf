@@ -1,3 +1,14 @@
+
+data "external" "k8s_join_token" {
+  depends_on = ["null_resource.provision_master"]
+  program = ["assets/get-token.sh"]
+  query = {
+    host = "${openstack_networking_floatingip_v2.masterip.address}",
+    private_key  = "${var.privkey}"
+  }
+}
+
+
 resource "null_resource" "provision_worker" {
   count = "${var.worker_count}"
 
@@ -5,7 +16,7 @@ resource "null_resource" "provision_worker" {
     bastion_host = "${openstack_networking_floatingip_v2.masterip.address}"
     user         = "ubuntu"
     private_key  = "${file("${var.privkey}")}"
-    host         = "${element(openstack_compute_instance_v2.worker.*.network.0.fixed_ip_v4, count.index)}"
+    host         = "${module.compute_worker_nodes.worker-instance-fixed-ips[count.index]}"
     timeout      = "5m"
   }
 
@@ -27,7 +38,7 @@ resource "null_resource" "provision_worker" {
     provisioner "remote-exec" {
       inline = [
         "chmod +x /home/ubuntu/bootstrap.sh",
-        "/home/ubuntu/bootstrap.sh ${local.worker-docker-devices[count.index]}"
+        "/home/ubuntu/bootstrap.sh ${module.compute_worker_nodes.worker-docker-devices[count.index]}"
       ]
     }
 }
@@ -40,7 +51,7 @@ resource "null_resource" "worker_join" {
     bastion_host = "${openstack_networking_floatingip_v2.masterip.address}"
     user         = "ubuntu"
     private_key  = "${file("${var.privkey}")}"
-    host         = "${element(openstack_compute_instance_v2.worker.*.network.0.fixed_ip_v4, count.index)}"
+    host         = "${module.compute_worker_nodes.worker-instance-fixed-ips[count.index]}"
   }
 
   provisioner "remote-exec" {
