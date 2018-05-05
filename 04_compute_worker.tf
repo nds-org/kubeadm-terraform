@@ -1,6 +1,6 @@
 
 module "compute_worker_nodes" {
-  source = "./worker"
+  source = "./compute"
    worker_count= "${var.worker_count}"
    master_ip_address= "${openstack_networking_floatingip_v2.masterip.address}"
    privkey= "${var.privkey}"
@@ -14,7 +14,6 @@ module "compute_worker_nodes" {
 
 resource "openstack_compute_floatingip_associate_v2" "workerip" {
   count       = "${var.worker_ips_count}"
-
   floating_ip = "${element(openstack_networking_floatingip_v2.workerip.*.address, count.index)}"
   instance_id = "${module.compute_worker_nodes.worker-instance-ids[count.index]}"
   fixed_ip    = "${module.compute_worker_nodes.worker-instance-fixed-ips[count.index]}"
