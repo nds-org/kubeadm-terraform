@@ -1,10 +1,11 @@
 
 variable "worker_count" {}
-variable "master_ip_address" {}
 variable "privkey" {}
 variable "env_name" {}
 variable "worker_flavor" {}
 variable "worker_image" {}
+variable "node_type" {}
+variable "master_ip_address"{}
 variable "key_pair_name" {}
 variable "security_group_name" {}
 variable "docker_volume_list" {
@@ -13,10 +14,11 @@ variable "docker_volume_list" {
 
 resource "openstack_compute_instance_v2" "worker" {
   count       = "${var.worker_count}"
-  name        = "${var.env_name}-worker${count.index}"
+  name        = "${var.env_name}-${var.node_type}${count.index}"
   flavor_name = "${var.worker_flavor}"
   image_name  = "${var.worker_image}"
   key_pair    = "${var.key_pair_name}"
+
 
   network {
     name = "${var.env_name}-net"

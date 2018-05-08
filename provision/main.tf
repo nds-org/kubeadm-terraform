@@ -1,6 +1,7 @@
 
 variable "worker_count" {}
 variable "master_ip_address" {}
+variable "node_type" {}
 variable "privkey" {}
 variable "env_name" {}
 variable "k8s_join_command" {}
@@ -39,8 +40,8 @@ resource "null_resource" "provision_worker" {
   # Update the /etc/hosts file to prevent sudo warnings about the hostname
     provisioner "remote-exec" {
       inline = [
-        "sudo hostnamectl set-hostname ${var.env_name}-worker${count.index}",
-        "echo '127.0.0.1 ${var.env_name}-worker${count.index}' | sudo tee -a /etc/hosts",
+        "sudo hostnamectl set-hostname ${var.env_name}-${var.node_type}${count.index}",
+        "echo '127.0.0.1 ${var.env_name}-${var.node_type}${count.index}' | sudo tee -a /etc/hosts",
         "nohup sudo reboot &"
       ]
     }
@@ -106,7 +107,7 @@ depends_on = ["null_resource.worker_join"]
   provisioner "remote-exec" {
     when = "destroy"
     inline = [
-      "kubectl delete node ${var.env_name}-worker${count.index}"
+      "kubectl delete node ${var.env_name}-${var.node_type}${count.index}"
     ]
   }
 }

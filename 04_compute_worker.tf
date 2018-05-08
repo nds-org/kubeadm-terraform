@@ -7,6 +7,7 @@ module "compute_worker_nodes" {
    env_name= "${var.env_name}"
    worker_flavor= "${var.worker_flavor}"
    worker_image= "${var.worker_image}"
+   node_type= "worker"
    key_pair_name= "${openstack_compute_keypair_v2.k8s.name}"
    security_group_name= "${openstack_compute_secgroup_v2.k8s.name}"
    docker_volume_list = "${openstack_blockstorage_volume_v2.worker_docker.*.id}"

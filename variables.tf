@@ -35,13 +35,21 @@ variable "public_network" {
 }
 
 variable "worker_count" {
-  default = "2"
+  default = "0"
 }
 
 variable "worker_ips_count" {
-  default = "1"
+  default = "0"
 }
 
 variable "docker_volume_size" {
   default = "75"
+}
+
+variable "storage_node_count" {
+  default = "2"
+}
+
+variable "storage_node_volume_size" {
+  default = "50"
 }
