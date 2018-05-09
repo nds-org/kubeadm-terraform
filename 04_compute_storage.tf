@@ -6,7 +6,7 @@ module "compute_storage_nodes" {
    privkey= "${var.privkey}"
    env_name= "${var.env_name}"
    worker_flavor= "${var.worker_flavor}"
-   worker_image= "${var.worker_image}"
+   worker_image= "${var.image}"
    node_type = "storage"
    key_pair_name= "${openstack_compute_keypair_v2.k8s.name}"
    security_group_name= "${openstack_compute_secgroup_v2.k8s.name}"

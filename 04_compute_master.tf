@@ -1,7 +1,7 @@
 resource "openstack_compute_instance_v2" "master" {
   name        = "${var.env_name}-master"
   flavor_name = "${var.master_flavor}"
-  image_name  = "${var.master_image}"
+  image_name  = "${var.image}"
   key_pair    = "${openstack_compute_keypair_v2.k8s.name}"
 
   network {
