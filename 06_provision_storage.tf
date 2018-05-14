@@ -36,8 +36,12 @@ depends_on = ["module.provision_storage_nodes"]
   }
 }
 
+
 resource "null_resource" "install_rook" {
 depends_on = ["null_resource.provision_storage_mounts"]
+
+# Don't install rook chart if there are no storage nodes in use
+count = "${var.storage_node_count > 0 ? 1 : 0}"
 
   connection {
     user        = "ubuntu"
