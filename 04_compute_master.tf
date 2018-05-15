@@ -3,6 +3,7 @@ resource "openstack_compute_instance_v2" "master" {
   flavor_name = "${var.master_flavor}"
   image_name  = "${var.image}"
   key_pair    = "${openstack_compute_keypair_v2.k8s.name}"
+  availability_zone = "${var.availability_zone}"
 
   network {
     name = "${var.env_name}-net"

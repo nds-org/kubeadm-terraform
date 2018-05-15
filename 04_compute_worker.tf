@@ -5,6 +5,7 @@ module "compute_worker_nodes" {
    master_ip_address= "${openstack_networking_floatingip_v2.masterip.address}"
    privkey= "${var.privkey}"
    env_name= "${var.env_name}"
+   availability_zone = "${var.availability_zone}"
    worker_flavor= "${var.worker_flavor}"
    worker_image= "${var.image}"
    node_type= "worker"

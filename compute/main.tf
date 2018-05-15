@@ -4,6 +4,7 @@ variable "privkey" {}
 variable "env_name" {}
 variable "worker_flavor" {}
 variable "worker_image" {}
+variable "availability_zone" {}
 variable "node_type" {}
 variable "master_ip_address"{}
 variable "key_pair_name" {}
@@ -18,7 +19,7 @@ resource "openstack_compute_instance_v2" "worker" {
   flavor_name = "${var.worker_flavor}"
   image_name  = "${var.worker_image}"
   key_pair    = "${var.key_pair_name}"
-
+  availability_zone = "${var.availability_zone}"
 
   network {
     name = "${var.env_name}-net"

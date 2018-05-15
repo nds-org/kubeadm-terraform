@@ -25,11 +25,13 @@ on the more specific value domains.
  |image | Name of the OS image to be used to initialize master nodes. So far, this has been tested on Ubuntu 16 |
  |worker_flavor | Name of the Openstack instance flavor to use for the worker nodes |
  |public_network | Name of the network that has access to the internet |
+ |availability_zone|Name of the Openstack availability zone where the hosts should be provisioned |
  |worker_count | How many workers to provision |
  | worker_ips_count | How many of the workers should be assigned an external IP address? |
  | docker_volume_size | All nodes will have external block storage attached to use as the docker storage base (/var/lib/docker). Specify the size for these volumes in GBytes |
  | storage_node_count | You can optionally provision nodes to host CEPH shared storage. This needs to be an even number. |
  | storage_node_volume_size | Specify the size of the storage attached to each storage node. Expressed in GBytes |
+ | dns_nameservers | A list of IP addresses of DNS name servers available to the new subnet |
 
 
  ### Initialize Terraform
@@ -49,7 +51,7 @@ on the more specific value domains.
  Terraform makes use of the Openstack environment variables set by the script
  that you can download from your Openstack portal. Download this file and
  execute the script. It will prompt you for your password.
- 
+
  ### Build the Cluster
  Now comes the easy part. To build your kubernetes cluster just issue this
  command in the root folder of this repo:

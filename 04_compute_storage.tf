@@ -4,6 +4,7 @@ module "compute_storage_nodes" {
    worker_count= "${var.storage_node_count}"
    master_ip_address= "${openstack_networking_floatingip_v2.masterip.address}"
    privkey= "${var.privkey}"
+   availability_zone = "${var.availability_zone}"
    env_name= "${var.env_name}"
    worker_flavor= "${var.worker_flavor}"
    worker_image= "${var.image}"

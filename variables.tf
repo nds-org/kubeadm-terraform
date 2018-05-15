@@ -26,6 +26,10 @@ variable "public_network" {
   default = "ext-net"
 }
 
+variable "availability_zone" {
+  default = "nova"
+}
+
 variable "worker_count" {
   default = "1"
 }
@@ -44,4 +48,10 @@ variable "storage_node_count" {
 
 variable "storage_node_volume_size" {
   default = "50"
+}
+
+variable "dns_nameservers" {
+  description = "An array of DNS name server names used by hosts in this subnet."
+  type        = "list"
+  default     = []
 }
