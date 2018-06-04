@@ -17,7 +17,8 @@ resource "openstack_compute_instance_v2" "master" {
 
   depends_on = [
     "openstack_networking_router_interface_v2.router_interface_1",
-    "openstack_blockstorage_volume_v2.master_docker"
+    "openstack_blockstorage_volume_v2.master_docker",
+    "openstack_networking_subnet_v2.subnet_1"
   ]
 }
 
