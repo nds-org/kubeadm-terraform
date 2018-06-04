@@ -1,13 +1,13 @@
 variable "env_name" {
-  default = "bgdev"
+  default = "kubeadm"
 }
 
 variable "pubkey" {
-  default = "~/.ssh/cloud.key.pub"
+  default = "~/.ssh/id_rsa.pub"
 }
 
 variable "privkey" {
-  default = "~/.ssh/cloud.key"
+  default = "~/.ssh/id_rsa.key"
 }
 
 variable "master_flavor" {
@@ -22,12 +22,16 @@ variable "worker_flavor" {
   default = "m1.large"
 }
 
+variable "storage_flavor" {
+  default = "m1.large"
+}
+
 variable "public_network" {
   default = "ext-net"
 }
 
 variable "availability_zone" {
-  default = "nova"
+  default = ""
 }
 
 variable "worker_count" {

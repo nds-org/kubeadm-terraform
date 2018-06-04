@@ -9,9 +9,10 @@ simple article by Andre Zonca of San Diego Supercomputer Center: [Deploy scalabl
 Check out a copy of this repo and cd into the top directory.
 
 ### Configure variables
-You will need to edit variables.tf to reflect values from your Openstack
-environment as well as to establish the number of nodes you need in your
-cluster.
+You will need to set some of the variables found in `variables.tf`. The best
+way to do this is to create a `.tfvars` file in the `configs` directory. This
+directory is in `.gitignore` to make this easy. Entries in `.tfvars` files
+are just _name_ = "_value_"
 
 Most of the variables should be obvious, but here is a summary with some detail
 on the more specific value domains.
@@ -24,6 +25,7 @@ on the more specific value domains.
  |master_flavor | Name of the Openstack instance flavor to use for the master node |
  |image | Name of the OS image to be used to initialize master nodes. So far, this has been tested on Ubuntu 16 |
  |worker_flavor | Name of the Openstack instance flavor to use for the worker nodes |
+ |storage_flavor | Name of the Openstack instance flavor to use for the storage nodes |
  |public_network | Name of the network that has access to the internet |
  |availability_zone|Name of the Openstack availability zone where the hosts should be provisioned |
  |worker_count | How many workers to provision |
@@ -52,11 +54,16 @@ on the more specific value domains.
  that you can download from your Openstack portal. Download this file and
  execute the script. It will prompt you for your password.
 
+ ### Install `jq`
+ The step that obtains the join token for the workers to connect to the
+ kubernetes master requires the `jq` JSON processor. Please insure that it is
+ installed on the host where you are executing the terraform command.
+
  ### Build the Cluster
  Now comes the easy part. To build your kubernetes cluster just issue this
  command in the root folder of this repo:
  ```bash
- % terraform apply
+ % terraform apply -var-file="configs/<<your .tfvars file>>"
  ```
 
  ## Using the Cluster
