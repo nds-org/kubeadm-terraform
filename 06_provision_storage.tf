@@ -36,9 +36,29 @@ depends_on = ["module.provision_storage_nodes"]
   }
 }
 
+# We need to construct a custom rook-cluster.yaml which contains
+# an entry for each storage node. Start with the basic template
+resource "null_resource" "initialize_rook_cluster_file" {
+depends_on = ["module.provision_storage_nodes"]
+  provisioner "local-exec" {
+    command="cp assets/rook-cluster.template.yaml rook-cluster.yaml"
+  }
+}
+
+# Append an entry for each stroage node
+resource "null_resource" "customize_rook_cluster_file" {
+depends_on = ["null_resource.initialize_rook_cluster_file"]
+count = "${var.storage_node_count}"
+  provisioner "local-exec" {
+    command="assets/append_rook_node.sh ${var.env_name}-storage${count.index}"
+  }
+}
 
 resource "null_resource" "install_rook" {
-depends_on = ["null_resource.provision_storage_mounts"]
+depends_on = [
+    "null_resource.provision_storage_mounts",
+    "null_resource.customize_rook_cluster_file"
+]
 
 # Don't install rook chart if there are no storage nodes in use
 count = "${var.storage_node_count > 0 ? 1 : 0}"
@@ -53,6 +73,17 @@ count = "${var.storage_node_count > 0 ? 1 : 0}"
     source  = "assets/deploy-rook.sh"
     destination = "/home/ubuntu/deploy-rook.sh"
   }
+
+  provisioner "file" {
+    source  = "rook-cluster.yaml"
+    destination = "/home/ubuntu/rook-cluster.yaml"
+  }
+
+  provisioner "file" {
+    source  = "assets/rook-storageclass.yaml"
+    destination = "/home/ubuntu/rook-storageclass.yaml"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ubuntu/deploy-rook.sh",

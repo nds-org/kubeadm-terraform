@@ -1,0 +1,14 @@
+apiVersion: rook.io/v1alpha1
+kind: Cluster
+metadata:
+  name: rook
+  namespace: rook
+spec:
+  versionTag: v0.6.2
+  dataDirHostPath: /var/lib/rook
+  storage:
+    useAllNodes: false
+    useAllDevices: false
+    storeConfig:
+      storeType: filestore
+    nodes:
