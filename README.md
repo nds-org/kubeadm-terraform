@@ -81,14 +81,14 @@ on the more specific value domains.
  [Rook](https://rook.io) storage system. It will be installed using the official
  helm chart.
 
- A cluster is created using [Andrea Zonca's recipe](https://github.com/zonca/jupyterhub-deploy-kubernetes-jetstream/blob/master/storage_rook/rook-cluster.yaml).
+ A rook cluster is created using [Andrea Zonca's recipe](https://github.com/zonca/jupyterhub-deploy-kubernetes-jetstream/blob/master/storage_rook/rook-cluster.yaml).
  This configuration takes advantage of the fact that our Terraform spec mounts
- the volume at `/vol_b`.
+ the volume at `/rook`.
 
  We also create a new StorageClass to make it easy to start using the Rook
  cluster. You can follow Andrea's simple test to try out the storage cluster.
  He writes:
->You can copy alpine-rook.yaml from [Github](https://github.com/zonca/jupyterhub-deploy-kubernetes-jetstream/blob/master/storage_rook/alpine-rook.yaml) and launch it with:
+>You can copy alpine-rook.yaml from [Github](https://raw.githubusercontent.com/zonca/jupyterhub-deploy-kubernetes-jetstream/master/storage_rook/alpine-rook.yaml) and launch it with:
 >>sudo kubectl create -f alpine-rook.yaml
 >
 >It is a very small pod with Alpine Linux that creates a 2 GB volume from Rook and mounts it on /data.

@@ -31,7 +31,7 @@ depends_on = ["module.provision_storage_nodes"]
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ubuntu/bootstrap-rook.sh",
-      "/home/ubuntu/bootstrap-rook.sh ${local.storage-volume-devices[count.index]}"
+      "sudo /home/ubuntu/bootstrap-rook.sh ${local.storage-volume-devices[count.index]}"
     ]
   }
 }
