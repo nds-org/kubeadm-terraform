@@ -20,13 +20,24 @@ resource "null_resource" "provision_master" {
   }
 
   provisioner "file" {
+    source  = "assets/attach_docker_data_root.sh"
+    destination = "/home/ubuntu/attach_docker_data_root.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /home/ubuntu/attach_docker_data_root.sh",
+      "sudo /home/ubuntu/attach_docker_data_root.sh ${local.master-docker-device}"
+    ]
+  }
+
+  provisioner "file" {
     source  = "assets/bootstrap.sh"
     destination = "/home/ubuntu/bootstrap.sh"
   }
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ubuntu/bootstrap.sh",
-      "/home/ubuntu/bootstrap.sh ${local.master-docker-device}"
+      "/home/ubuntu/bootstrap.sh"
     ]
   }
 
