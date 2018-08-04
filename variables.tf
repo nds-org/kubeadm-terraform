@@ -7,7 +7,7 @@ variable "pubkey" {
 }
 
 variable "privkey" {
-  default = "~/.ssh/id_rsa.key"
+  default = "~/.ssh/id_rsa"
 }
 
 variable "master_flavor" {
@@ -26,8 +26,12 @@ variable "storage_flavor" {
   default = "m1.large"
 }
 
-variable "public_network" {
-  default = "ext-net"
+variable "external_gateway" {
+  default = ""
+}
+
+variable "pool_name" {
+  default = "public"
 }
 
 variable "availability_zone" {
