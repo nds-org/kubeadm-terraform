@@ -1,7 +1,7 @@
 #!/bin/bash
 mkfs -t ext4 $1
-mkdir /rook
-mount -t ext4 $1 /rook
+mkdir /data
+mount -t ext4 $1 /data
 
 # It can take a few seconds for the new partition to
 # be mounted and the filesystem type to be available
@@ -11,8 +11,11 @@ do
   sleep 5s
 done
 
-# Add the rook mount to fstab to ensure it survives reboot
+# Add the mount to fstab to ensure it survives reboot
 lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT $1 \
      |grep ext4 \
      | awk '{print "UUID="$3"  "$4"  "$2"  defaults 0 0"}' \
      >> /etc/fstab
+
+# Make directory to store Persistent Volume Claims for NFS client provisioner
+mkdir /data/pvc
