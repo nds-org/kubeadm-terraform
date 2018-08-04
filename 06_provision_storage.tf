@@ -1,4 +1,3 @@
-
 module "provision_storage_nodes" {
   source = "./provision"
    worker_count= "${var.storage_node_count}"
@@ -25,42 +24,43 @@ depends_on = ["module.provision_storage_nodes"]
   }
 
   provisioner "file" {
-    source  = "assets/bootstrap-rook.sh"
-    destination = "/home/ubuntu/bootstrap-rook.sh"
+    source  = "assets/bootstrap-storage.sh"
+    destination = "/home/ubuntu/bootstrap-storage.sh"
   }
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /home/ubuntu/bootstrap-rook.sh",
-      "sudo /home/ubuntu/bootstrap-rook.sh ${local.storage-volume-devices[count.index]}"
+      "chmod +x /home/ubuntu/bootstrap-storage.sh",
+      "sudo /home/ubuntu/bootstrap-storage.sh ${local.storage-volume-devices[count.index]}"
     ]
   }
 }
 
-# We need to construct a custom rook-cluster.yaml which contains
-# an entry for each storage node. Start with the basic template
-resource "null_resource" "initialize_rook_cluster_file" {
+## Label the storage node
+resource "null_resource" "label_storage_nodes" {
 depends_on = ["module.provision_storage_nodes"]
-  provisioner "local-exec" {
-    command="cp assets/rook-cluster.template.yaml rook-cluster.yaml"
+count      = "${var.storage_node_count}"
+
+  connection {
+    user        = "ubuntu"
+    private_key = "${file("${var.privkey}")}"
+    host        = "${openstack_networking_floatingip_v2.masterip.address}"
+  }
+
+  # Label the storage nodes that have external volumes attached
+  provisioner "remote-exec" {
+    inline = [
+      "kubectl label node ${var.env_name}-storage${count.index} external-storage=true"
+    ]
   }
 }
 
-# Append an entry for each stroage node
-resource "null_resource" "customize_rook_cluster_file" {
-depends_on = ["null_resource.initialize_rook_cluster_file"]
-count = "${var.storage_node_count}"
-  provisioner "local-exec" {
-    command="assets/append_rook_node.sh ${var.env_name}-storage${count.index}"
-  }
-}
 
-resource "null_resource" "install_rook" {
+resource "null_resource" "install_nfs" {
 depends_on = [
     "null_resource.provision_storage_mounts",
-    "null_resource.customize_rook_cluster_file"
 ]
 
-# Don't install rook chart if there are no storage nodes in use
+# Don't install if there are no storage nodes in use
 count = "${var.storage_node_count > 0 ? 1 : 0}"
 
   connection {
@@ -70,24 +70,19 @@ count = "${var.storage_node_count > 0 ? 1 : 0}"
   }
 
   provisioner "file" {
-    source  = "assets/deploy-rook.sh"
-    destination = "/home/ubuntu/deploy-rook.sh"
+    source  = "assets/nfs"
+    destination = "/home/ubuntu"
   }
 
   provisioner "file" {
-    source  = "rook-cluster.yaml"
-    destination = "/home/ubuntu/rook-cluster.yaml"
-  }
-
-  provisioner "file" {
-    source  = "assets/rook-storageclass.yaml"
-    destination = "/home/ubuntu/rook-storageclass.yaml"
+    source  = "assets/deploy-nfs.sh"
+    destination = "/home/ubuntu/deploy-nfs.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /home/ubuntu/deploy-rook.sh",
-      "/home/ubuntu/deploy-rook.sh"
+      "chmod +x /home/ubuntu/deploy-nfs.sh",
+      "/home/ubuntu/deploy-nfs.sh"
     ]
   }
 }
