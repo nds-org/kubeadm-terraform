@@ -26,7 +26,8 @@ on the more specific value domains.
  |image | Name of the OS image to be used to initialize master nodes. So far, this has been tested on Ubuntu 16 |
  |worker_flavor | Name of the Openstack instance flavor to use for the worker nodes |
  |storage_flavor | Name of the Openstack instance flavor to use for the storage nodes |
- |public_network | Name of the network that has access to the internet |
+ |external_network_id | ID of the network that has the gateway to the internet |
+ |pool_name | The name of the pool from which the floating IP belongs to (usually the external network's name) |
  |availability_zone|Name of the Openstack availability zone where the hosts should be provisioned |
  |worker_count | How many workers to provision |
  | worker_ips_count | How many of the workers should be assigned an external IP address? |
