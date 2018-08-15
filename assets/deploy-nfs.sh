@@ -1,17 +1,26 @@
 #!/bin/bash
 
-# Deploy the NFS server
-kubectl create -f nfs-server.yaml
-nfs_server_ip=`kubectl get svc nfs-server -o jsonpath="{.spec.clusterIP}"`
-
-# Deploy the NFS Client provisioner
+# Clone external-storage repo for NFS provisioner templates
 git clone https://github.com/kubernetes-incubator/external-storage
 
+# Modify StorageClass to be our default (add annotation)
+echo '---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: example-nfs
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: example.com/nfs
+parameters:
+  mountOptions: "vers=4.1"  # TODO: reconcile with StorageClass.mountOptions
+' > external-storage/nfs/deploy/kubernetes/class.yaml
 
 # Create the storage class
-kubectl create -f external-storage/nfs-client/deploy/class.yaml
+kubectl create -f external-storage/nfs/deploy/kubernetes/class.yaml
 
+# Deploy RBAC role/binding
+kubectl create -f external-storage/nfs/deploy/kubernetes/rbac.yaml
 
-kubectl create -f external-storage/nfs-client/deploy/auth/serviceaccount.yaml -f external-storage/nfs-client/deploy/auth/clusterrole.yaml -f external-storage/nfs-client/deploy/auth/clusterrolebinding.yaml
-# Create the client provisioner
-cat external-storage/nfs-client/deploy/deployment.yaml | sed "s/10.10.10.60/${nfs_server_ip}/g" | sed "s?/ifs/kubernetes?/?g" | kubectl create -f -
+# Create the NFS provisioner
+kubectl create -f external-storage/nfs/deploy/kubernetes/deployment.yaml
