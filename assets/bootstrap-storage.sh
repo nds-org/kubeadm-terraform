@@ -19,3 +19,5 @@ lsblk -o NAME,FSTYPE,UUID,MOUNTPOINT $1 \
 
 # Make directory to store Persistent Volume Claims for NFS client provisioner
 mkdir /data/pvc
+
+sudo apt-get install -y nfs-common
