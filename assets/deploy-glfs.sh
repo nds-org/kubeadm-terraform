@@ -34,7 +34,7 @@ $DEBUG kubectl create -f external-storage/gluster/glusterfs/deploy/glusterfs-dae
 count="$(kubectl get pods --no-headers | grep glusterfs | grep -v provisioner | awk '{print $3}' | grep Running | wc -l)"
 while [ "$count" -lt "$NODE_COUNT" ]; do
   echo "Waiting for GLFS: $count / $NODE_COUNT"
-  sleep 10
+  sleep 5
   count="$(kubectl get pods --no-headers | grep glusterfs | grep -v provisioner | sed -e s/[\\n\\r]//g | awk '{print $3}' | grep -o Running | wc -l)"
 done
 echo "GlusterFS is now Running: $count / $NODE_COUNT"
