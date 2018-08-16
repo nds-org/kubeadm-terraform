@@ -9,7 +9,7 @@ DEBUG=""
 # The host directory to store brick files
 BRICK_HOSTDIR="/tmp"
 
-# 
+# Read in the desired number of storage nodes from first arg
 NODE_COUNT="$1"
 
 # Ensure that we have enough storage nodes to run GLFS
