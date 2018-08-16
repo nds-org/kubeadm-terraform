@@ -3,7 +3,7 @@
 # Usage: ./deploy-glfs.sh <number_of_storage_nodes>
 # 
 
-# DEBUG ONLY: Set this to echo to "neuter" the script
+# DEBUG ONLY: Set this to "echo" to neuter the script and perform a dry-run
 DEBUG=""
 
 # The host directory to store brick files
@@ -84,80 +84,8 @@ parameters:
 # Create the storage class
 $DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/storageclass.yaml
 
-# FIXME: Remove this once PR is merged to external-storage
-# See https://github.com/kubernetes-incubator/external-storage/pull/932
-echo '---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: glfs-provisioner
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: glfs-provisioner-runner
-rules:
-  - apiGroups: [""]
-    resources: ["persistentvolumes"]
-    verbs: ["get", "list", "watch", "create", "delete"]
-  - apiGroups: [""]
-    resources: ["persistentvolumeclaims"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["events", "pods/exec"]
-    verbs: ["create", "update", "patch"]
-  - apiGroups: [""]
-    resources: ["endpoints"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["services"]
-    verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: run-glfs-provisioner
-subjects:
-  - kind: ServiceAccount
-    name: glfs-provisioner
-    namespace: default
-# update namespace above to your namespace in order to make this work
-roleRef:
-  kind: ClusterRole
-  name: glfs-provisioner-runner
-  apiGroup: rbac.authorization.k8s.io
-' > external-storage/gluster/glusterfs/deploy/rbac.yaml
-
 # Bind the necessary ServiceAccount / ClusterRole
 $DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/rbac.yaml
-
-# FIXME: Remove this once PR is merged to external-storage
-# See https://github.com/kubernetes-incubator/external-storage/pull/932
-echo '---
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: glusterfs-simple-provisioner
-spec:
-  replicas: 1
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: glusterfs-simple-provisioner
-    spec:
-      serviceAccount: glfs-provisioner
-      containers:
-        - image: "quay.io/external_storage/glusterfs-simple-provisioner:latest"
-          name: glusterfs-simple-provisioner
-' > external-storage/gluster/glusterfs/deploy/deployment.yaml
 
 # Create the GLFS Simple Provisioner
 $DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/deployment.yaml
