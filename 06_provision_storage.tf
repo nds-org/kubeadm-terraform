@@ -56,12 +56,12 @@ count      = "${var.storage_node_count}"
 
 
 resource "null_resource" "install_nfs" {
-depends_on = [
+  depends_on = [
     "null_resource.provision_storage_mounts",
-]
+  ]
 
-# Don't install if there are no storage nodes in use
-count = "${var.storage_node_count > 0 ? 1 : 0}"
+  # Don't install if there are no storage nodes in use
+  count = "${(var.storage_node_count == 1) ? 1 : 0}"
 
   connection {
     user        = "ubuntu"
@@ -74,15 +74,37 @@ count = "${var.storage_node_count > 0 ? 1 : 0}"
     destination = "/home/ubuntu/deploy-nfs.sh"
   }
 
-  provisioner "file" {
-    source  = "assets/nfs-server.yaml"
-    destination = "/home/ubuntu/nfs-server.yaml"
-  }
-
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ubuntu/deploy-nfs.sh",
       "/home/ubuntu/deploy-nfs.sh"
+    ]
+  }
+}
+
+resource "null_resource" "install_glfs" {
+  depends_on = [
+    "null_resource.provision_storage_mounts",
+  ]
+
+  # Don't install if there aren't enough storage nodes in use
+  count = "${var.storage_node_count > 1 ? 1 : 0}"
+
+  connection {
+    user        = "ubuntu"
+    private_key = "${file("${var.privkey}")}"
+    host        = "${openstack_networking_floatingip_v2.masterip.address}"
+  }
+
+  provisioner "file" {
+    source  = "assets/deploy-glfs.sh"
+    destination = "/home/ubuntu/deploy-glfs.sh"
+  }
+  
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /home/ubuntu/deploy-glfs.sh",
+      "/home/ubuntu/deploy-glfs.sh ${var.storage_node_count}"
     ]
   }
 }
