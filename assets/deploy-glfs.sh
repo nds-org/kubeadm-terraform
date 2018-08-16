@@ -85,6 +85,7 @@ parameters:
 $DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/storageclass.yaml
 
 # FIXME: Remove this once PR is merged to external-storage
+# See https://github.com/kubernetes-incubator/external-storage/pull/932
 echo '---
 apiVersion: v1
 kind: ServiceAccount
@@ -137,6 +138,7 @@ roleRef:
 $DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/rbac.yaml
 
 # FIXME: Remove this once PR is merged to external-storage
+# See https://github.com/kubernetes-incubator/external-storage/pull/932
 echo '---
 apiVersion: extensions/v1beta1
 kind: Deployment
