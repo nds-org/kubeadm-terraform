@@ -77,9 +77,10 @@ on the more specific value domains.
  external IP addresses assigned. For your convenience, these nodes are all
  labeled `external_ip=true`.
 
- ### NFS Client Provisioner
- If you configured a storage node, it will be provisioned to run an NFS
- server and the NFS client provisioner for persistent volume claim msupport.
+ ### NFS Provisioner
+ If you configured a storage node, it will be provisioned to run the NFS 
+ provisioner. This will run a lightweight NFS server in your cluster for 
+ persistent volume claim support.
 
 # Resizing the cluster
 Terraform makes this easy. Just adjust the values for the number of worker nodes
