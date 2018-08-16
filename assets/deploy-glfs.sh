@@ -28,7 +28,7 @@ for node in $STORAGE_NODES; do
 done
 
 # Create the GLFS cluster
-$DEBUG kubectl create -f external-storage/gluster/glusterfs/deploy/glusterfs-daemonset.yaml
+$DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/glusterfs-daemonset.yaml
 
 # Wait for the GLFS cluster to come up
 count="$(kubectl get pods --no-headers | grep glusterfs | grep -v provisioner | awk '{print $3}' | grep Running | wc -l)"
