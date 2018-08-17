@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create the NFS storage class
-kubectl create -f nfs/class.yaml
+kubectl create -f nfs/storageclass.yaml
 
 # Deploy RBAC role/binding
 kubectl create -f nfs/rbac.yaml
