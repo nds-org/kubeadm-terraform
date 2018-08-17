@@ -74,11 +74,6 @@ count = "${var.storage_node_count > 0 ? 1 : 0}"
     destination = "/home/ubuntu/deploy-nfs.sh"
   }
 
-  provisioner "file" {
-    source  = "assets/nfs-server.yaml"
-    destination = "/home/ubuntu/nfs-server.yaml"
-  }
-
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ubuntu/deploy-nfs.sh",
