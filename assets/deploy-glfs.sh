@@ -7,7 +7,7 @@
 DEBUG=""
 
 # The host directory to store brick files
-BRICK_HOSTDIR="/tmp"
+BRICK_HOSTDIR="/data/pvc"
 
 # Read in the desired number of storage nodes from first arg
 NODE_COUNT="$1"
@@ -18,9 +18,6 @@ if [ "$NODE_COUNT" -lt 2 ]; then
   exit 1
 fi
 
-# Clone external-storage repo for NFS provisioner templates
-$DEBUG git clone https://github.com/kubernetes-incubator/external-storage 
-
 # Label storage nodes appropriately
 STORAGE_NODES=$(kubectl get nodes --no-headers | grep storage | awk '{print $1}')
 for node in $STORAGE_NODES; do
@@ -28,14 +25,14 @@ for node in $STORAGE_NODES; do
 done
 
 # Create the GLFS cluster
-$DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/glusterfs-daemonset.yaml
+$DEBUG kubectl apply -f glfs/glusterfs-daemonset.yaml
 
 # Wait for the GLFS cluster to come up
 count="$(kubectl get pods --no-headers | grep glusterfs | grep -v provisioner | awk '{print $3}' | grep Running | wc -l)"
 while [ "$count" -lt "$NODE_COUNT" ]; do
   echo "Waiting for GLFS: $count / $NODE_COUNT"
   sleep 5
-  count="$(kubectl get pods --no-headers | grep glusterfs | grep -v provisioner | sed -e s/[\\n\\r]//g | awk '{print $3}' | grep -o Running | wc -l)"
+  count="$(kubectl get pods --no-headers | grep glusterfs | grep -v provisioner |  awk '{print $3}' | grep -o Running | wc -l)"
 done
 echo "GlusterFS is now Running: $count / $NODE_COUNT"
 
@@ -79,13 +76,13 @@ parameters:
   forceCreate: \"true\"
   volumeType: \"replica 2\"
   brickrootPaths: \"$BRICK_PATHS\"
-" > external-storage/gluster/glusterfs/deploy/storageclass.yaml
+" > glfs/storageclass.yaml
 
 # Create the storage class
-$DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/storageclass.yaml
+$DEBUG kubectl apply -f glfs/storageclass.yaml
 
 # Bind the necessary ServiceAccount / ClusterRole
-$DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/rbac.yaml
+$DEBUG kubectl apply -f glfs/rbac.yaml
 
 # Create the GLFS Simple Provisioner
-$DEBUG kubectl apply -f external-storage/gluster/glusterfs/deploy/deployment.yaml
+$DEBUG kubectl apply -f glfs/deployment.yaml
