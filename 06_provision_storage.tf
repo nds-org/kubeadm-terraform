@@ -46,7 +46,7 @@ count      = "${var.storage_node_count}"
     host        = "${openstack_networking_floatingip_v2.masterip.address}"
   }
 
-  # Label the worker nodes that have external IP addresses
+  # Label the storage nodes that have external volumes attached
   provisioner "remote-exec" {
     inline = [
       "kubectl label node ${var.env_name}-storage${count.index} external-storage=true"
@@ -67,6 +67,11 @@ count = "${var.storage_node_count > 0 ? 1 : 0}"
     user        = "ubuntu"
     private_key = "${file("${var.privkey}")}"
     host        = "${openstack_networking_floatingip_v2.masterip.address}"
+  }
+
+  provisioner "file" {
+    source  = "assets/nfs"
+    destination = "/home/ubuntu"
   }
 
   provisioner "file" {
