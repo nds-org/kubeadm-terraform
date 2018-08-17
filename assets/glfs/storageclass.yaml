@@ -1,0 +1,13 @@
+### WARNING: This file is dynamically generated and will be overwritten by deploy-glfs.sh ###
+### DO NOT manually edit this file. ###
+### DO NOT manually edit this file. ###
+### DO NOT manually edit this file. ###
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: glusterfs-simple
+provisioner: gluster.org/glusterfs-simple
+parameters:
+  forceCreate: "true"
+  brickrootPaths: "{{ BRICK_PATHS }}"
