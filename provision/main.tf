@@ -27,6 +27,10 @@ resource "null_resource" "provision_worker" {
     master_provisioned = "${var.master_provision_dependency}"
   }
 
+  lifecycle{
+    create_before_destroy = true
+  }
+
   count = "${var.worker_count}"
 
   connection {
