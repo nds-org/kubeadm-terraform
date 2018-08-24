@@ -7,7 +7,7 @@ variable "pubkey" {
 }
 
 variable "privkey" {
-  default = "~/.ssh/id_rsa.key"
+  default = "~/.ssh/id_rsa"
 }
 
 variable "master_flavor" {
