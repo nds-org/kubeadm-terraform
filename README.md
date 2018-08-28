@@ -78,9 +78,15 @@ on the more specific value domains.
  labeled `external_ip=true`.
 
 ### NFS Provisioner
-If you configured a storage node, it will be provisioned to run the NFS
-provisioner. This will run a lightweight NFS server in your cluster for
-persistent volume claim support.
+If you configure a single storage node, it will be provisioned to run the [NFS
+Provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs).
+This will run a lightweight NFS server in your cluster for persistent volume claim support.
+
+### GLFS Provisioner
+If you configure 2 or more storage nodes, they will be provisioned to run the
+[GlusterFS Simple Provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/gluster/glusterfs).
+This will run a GlusterFS storage cluster in Kubernetes to provide distributed,
+scalable persistent volume claim support.
 
 # Resizing the cluster
 Terraform makes this easy. Just adjust the values for the number of worker nodes

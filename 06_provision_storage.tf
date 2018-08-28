@@ -86,3 +86,36 @@ count = "${var.storage_node_count > 0 ? 1 : 0}"
     ]
   }
 }
+
+resource "null_resource" "install_glfs" {
+depends_on = [
+    "null_resource.provision_storage_mounts",
+]
+
+# Don't install if there are no storage nodes in use
+count = "${var.storage_node_count > 1 ? 1 : 0}"
+
+  connection {
+    user        = "ubuntu"
+    private_key = "${file("${var.privkey}")}"
+    host        = "${openstack_networking_floatingip_v2.masterip.address}"
+  }
+
+  provisioner "file" {
+    source  = "assets/glfs"
+    destination = "/home/ubuntu"
+  }
+
+  provisioner "file" {
+    source  = "assets/deploy-glfs.sh"
+    destination = "/home/ubuntu/deploy-glfs.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /home/ubuntu/deploy-glfs.sh",
+      "/home/ubuntu/deploy-glfs.sh"
+    ]
+  }
+}
+
