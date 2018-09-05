@@ -33,6 +33,7 @@ on the more specific value domains.
  | docker_volume_size | All nodes will have external block storage attached to use as the docker storage base (/var/lib/docker). Specify the size for these volumes in GBytes |
  | storage_node_count | You can optionally provision nodes to host CEPH shared storage. This needs to be an even number. |
  | storage_node_volume_size | Specify the size of the storage attached to each storage node. Expressed in GBytes |
+ | pod_network_type | Choose the type of overlay network to use in Kubernetes. Supported options: `flannel` (default), `weave` |
  | dns_nameservers | A list of IP addresses of DNS name servers available to the new subnet |
 
 
@@ -111,6 +112,18 @@ Once you have completed testing, you can delete the pod and the Persistent Volum
 >>sudo kubectl delete -f alpine-rook.yaml
 >
 >The Persistent Volume will be automatically deleted by Kubernetes after a few minutes.
+
+### Pod Network Type
+Use this setting to change the type of overlay network that will be deployed for your pods
+to communicate with one another.
+
+Supported options:
+* [`flannel`](https://kubernetes.io/docs/concepts/cluster-administration/networking/#flannel)
+(default): Default network support for basic pod-to-pod communication
+* [`weave`](https://kubernetes.io/docs/concepts/cluster-administration/networking/#weave-net-from-weaveworks): Provides additional security for creating
+[NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+resources to restrict Ingress / Egress between pods
+
 
 # Resizing the cluster
 Terraform makes this easy. Just adjust the values for the number of worker nodes
