@@ -42,7 +42,7 @@ resource "null_resource" "provision_master" {
   }
 
   provisioner "remote-exec" {
-    script = "assets/bootstrap-master.sh"
+    script = "assets/bootstrap-master.sh ${var.pod_network_type}"
   }
 
   provisioner "remote-exec" {
