@@ -1,7 +1,16 @@
 #!/bin/bash
+echo '============================'
+echo '= Installing kubeadm       ='
+echo '============================'
 cd ~
-git clone https://github.com/nds-org/kubeadm-bootstrap
+git clone https://github.com/nds-org/kubeadm-bootstrap -b bootstrapping-fixup
 cd kubeadm-bootstrap
 sudo ./install-kubeadm.bash
 
-sudo apt-get install -y jq nfs-common
+
+echo '============================'
+echo '= Updating OS Dependencies ='
+echo '============================'
+sudo apt-get update -qq
+sudo apt-get upgrade -qq
+sudo apt-get install -qq jq nfs-common

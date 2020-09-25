@@ -1,5 +1,9 @@
 #!/bin/bash
 cd ~/kubeadm-bootstrap
+
+echo '============================'
+echo '= Provsioning Master Node  ='
+echo '============================'
 sudo -E ./init-master.bash $1
 
 # Enable kubectl bash completion on on master

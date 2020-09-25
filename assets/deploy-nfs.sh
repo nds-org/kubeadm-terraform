@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo '============================='
+echo '= Deploying NFS Provisioner ='
+echo '============================='
+
 # Create the NFS storage class
 kubectl apply -f nfs/storageclass.yaml
 
