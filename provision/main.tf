@@ -91,14 +91,6 @@ resource "null_resource" "worker_join" {
     "sudo ${var.k8s_join_command}"
     ]
   }
-
-  ## Perform some cleanup when we destroy the node
-  provisioner "remote-exec" {
-    when = "destroy"
-    inline = [
-      "sudo kubeadm reset"
-    ]
-  }
 }
 
 ## This null resource just has a provisioner step that runs on the master
