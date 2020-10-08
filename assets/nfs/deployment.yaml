@@ -12,16 +12,44 @@ metadata:
   labels:
     app: nfs-provisioner
 spec:
+  # {111 TCP}:true {111 UDP}:true {662 TCP}:true {662 UDP}:true {875 TCP}:true {875 UDP}:true {2049 TCP}:true {2049 UDP}:true {20048 TCP}:true {20048 UDP}:true {32803 TCP}:true {32803 UDP}:true
   ports:
     - name: nfs
       port: 2049
+    - name: nfs-udp
+      port: 2049
+      protocol: UDP
+
     - name: mountd
       port: 20048
+    - name: mountd-udp
+      port: 20048
+      protocol: UDP
+
     - name: rpcbind
       port: 111
     - name: rpcbind-udp
       port: 111
       protocol: UDP
+
+    - name: newporta
+      port: 662
+    - name: newporta-udp
+      port: 662
+      protocol: UDP
+
+    - name: newportb
+      port: 32803
+    - name: newportb-udp
+      port: 32803
+      protocol: UDP
+
+    - name: newportc
+      port: 875
+    - name: newportc-udp
+      port: 875
+      protocol: UDP
+
   selector:
     app: nfs-provisioner
 ---
@@ -43,19 +71,49 @@ spec:
         app: nfs-provisioner
     spec:
       serviceAccount: nfs-provisioner
+      nodeSelector:
+        external-storage: "true"
       containers:
         - name: nfs-provisioner
           image: quay.io/kubernetes_incubator/nfs-provisioner:latest
           ports:
+            # {111 TCP}:true {111 UDP}:true {662 TCP}:true {662 UDP}:true {875 TCP}:true {875 UDP}:true {2049 TCP}:true {2049 UDP}:true {20048 TCP}:true {20048 UDP}:true {32803 TCP}:true {32803 UDP}:true
             - name: nfs
               containerPort: 2049
+            - name: nfs-udp
+              containerPort: 2049
+              protocol: UDP
+
             - name: mountd
               containerPort: 20048
+            - name: mountd-udp
+              containerPort: 20048
+              protocol: UDP
+
             - name: rpcbind
               containerPort: 111
             - name: rpcbind-udp
               containerPort: 111
               protocol: UDP
+
+            - name: newporta
+              containerPort: 662
+            - name: newporta-udp
+              containerPort: 662
+              protocol: UDP
+
+            - name: newportb
+              containerPort: 32803
+            - name: newportb-udp
+              containerPort: 32803
+              protocol: UDP
+
+            - name: newportc
+              containerPort: 875
+            - name: newportc-udp
+              containerPort: 875
+              protocol: UDP
+
           securityContext:
             capabilities:
               add:
