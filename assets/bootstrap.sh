@@ -3,7 +3,7 @@ echo '============================'
 echo '= Installing kubeadm       ='
 echo '============================'
 cd ~
-git clone https://github.com/nds-org/kubeadm-bootstrap
+git clone https://github.com/nds-org/kubeadm-bootstrap -b v1.1
 cd kubeadm-bootstrap
 sudo ./install-kubeadm.bash
 
