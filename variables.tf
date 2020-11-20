@@ -58,6 +58,10 @@ variable "storage_node_volume_size" {
   default = "50"
 }
 
+variable "pod_network_type" {
+  default = "flannel"
+}
+
 variable "dns_nameservers" {
   description = "An array of DNS name server names used by hosts in this subnet."
   type        = "list"

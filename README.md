@@ -32,8 +32,9 @@ on the more specific value domains.
  |worker_count | How many workers to provision |
  | worker_ips_count | How many of the workers should be assigned an external IP address? |
  | docker_volume_size | All nodes will have external block storage attached to use as the docker storage base (/var/lib/docker). Specify the size for these volumes in GBytes |
- | storage_node_count | You can optionally provision nodes to host CEPH shared storage. This needs to be an even number. |
+ | storage_node_count | You can optionally provision nodes to host shared storage. 0 => no PVC support, 1 => NFS-backed PVC, 2+ => GlusterFS-backed PVCs [see below](README.md#nfs-provisioner) |
  | storage_node_volume_size | Specify the size of the storage attached to each storage node. Expressed in GBytes |
+ | pod_network_type | Choose the type of overlay network to use in Kubernetes. Supported options: `flannel` (default), `weave` |
  | dns_nameservers | A list of IP addresses of DNS name servers available to the new subnet |
 
 
@@ -78,9 +79,32 @@ on the more specific value domains.
  labeled `external_ip=true`.
 
 ### NFS Provisioner
-If you configured a storage node, it will be provisioned to run the NFS
-provisioner. This will run a lightweight NFS server in your cluster for
+If you configured a single storage node, it will be provisioned to run the
+[NFS Provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs).
+This will run a lightweight NFS server in your Kubernetes cluster for
 persistent volume claim support.
+
+### GlusterFS Provisioner
+If you configured 2 or more storage nodes, they will be provisioned to run the
+[GlusterFS Simple Provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/gluster/glusterfs).
+This will run a distributed, scalable GlusterFS cluster in your Kubernetes
+cluster for persistent volume claim support.
+
+NOTE: Many (if not all) GlusterFS volume configurations will require an even
+number of storage nodes. We do not support odd-numbered values > 2 for
+`storage_node_count`.
+
+### Pod Network Type
+Use this setting to change the type of overlay network that will be deployed for your pods
+to communicate with one another.
+
+Supported options:
+* [`flannel`](https://kubernetes.io/docs/concepts/cluster-administration/networking/#flannel)
+(default): Default network support for basic pod-to-pod communication
+* [`weave`](https://kubernetes.io/docs/concepts/cluster-administration/networking/#weave-net-from-weaveworks): Provides additional security for creating
+[NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+resources to restrict Ingress / Egress between pods
+
 
 # Resizing the cluster
 Terraform makes this easy. Just adjust the values for the number of worker nodes

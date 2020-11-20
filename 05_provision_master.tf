@@ -34,19 +34,21 @@ resource "null_resource" "provision_master" {
     source  = "assets/bootstrap.sh"
     destination = "/home/ubuntu/bootstrap.sh"
   }
+  provisioner "file" {
+    source  = "assets/bootstrap-master.sh"
+    destination = "/home/ubuntu/bootstrap-master.sh"
+  } 
   provisioner "remote-exec" {
     inline = [
+      "sleep 60",
       "chmod +x /home/ubuntu/bootstrap.sh",
-      "/home/ubuntu/bootstrap.sh"
+      "/home/ubuntu/bootstrap.sh",
+      "chmod +x /home/ubuntu/bootstrap-master.sh",
+      "/home/ubuntu/bootstrap-master.sh ${var.pod_network_type}"
     ]
   }
 
   provisioner "remote-exec" {
-    script = "assets/bootstrap-master.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = ["kubectl label node ${var.env_name}-master external_ip=true"
-]
+    inline = ["kubectl label node ${var.env_name}-master external_ip=true"]
   }
 }
